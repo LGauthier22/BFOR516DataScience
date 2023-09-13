@@ -1,0 +1,110 @@
+---
+title: "QuartoFlightsDataAnalysis"
+author: "Luke Gauthier"
+format: html
+editor: visual
+---
+
+# Flights Data Analysis
+
+## Questions
+
+-   Had an arrival delay of two or more hours
+-   Flew to Houston (IAH or HOU)
+-   Were operated by United, American, or Delta
+-   Departed in summer (July, August, and September)
+-   arrived more than two hours late, but didn't leave late
+-   were delayed by at least an hour, but made up over 30 minutes in flight
+-   Departed between midnight and 6 am(inclusive)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Packages
+
+```{r, message = FALSE}
+library(tidyverse)
+library(nycflights13)
+library(knitr)
+```
+
+## Read and view data
+
+```{r}
+dat_flights <- read_csv("dat_flights.csv")
+dim(dat_flights)
+
+dat_flights %>% head() %>% knitr::kable()
+```
+
+## Filtering the data
+
+#### Question 1:
+
+What flights had a delay of greater than 2 hours?
+
+```{r dat_flights}
+filter(dat_flights, arr_delay >= 120)
+```
+
+#### Question 2:
+
+What flights had a destination of Houston, Texas?
+
+```{r dat_flights}
+filter(dat_flights, dest== "IAH" | dest == "HOU")
+```
+
+#### Question 3:
+
+Which flights were done by the the carriers United Airlines, American Airlines, and Delta?
+
+```{r dat_flights}
+filter(dat_flights, carrier == "UA" | carrier == "AA" | carrier == "DL")
+```
+
+#### Quesion 4:
+
+Which flights took place during the summer (July, August, and September)?
+
+```{r dat_flights}
+filter(dat_flights, month == "7" | month == "8" | month == "9")
+```
+
+#### Question 5:
+
+Which flights arrived more than 2 hours late but didn't leave late?
+
+```{r dat_flights}
+filter(dat_flights, arr_delay >= 120 & dep_delay == 0)
+```
+
+#### Question 6:
+
+Which flights were delayed by at least one hour, but made up over 30 minutes in flight? \##### Part 1: Find the air scheduled air time
+
+```{r dat_flights}
+QuestionSix <- dat_flights %>%
+  add_column(sched_air_time = abs(dat_flights$sched_dep_time - dat_flights$sched_arr_time))
+QuestionSix
+QuestionSix <- QuestionSix %>%
+    add_column(air_time_diff = (QuestionSix$air_time - QuestionSix$sched_air_time))
+QuestionSix
+```
+
+##### Part 2:
+
+Filter the data to find the answer
+
+```{r QuestionSix}
+filter(QuestionSix, dep_delay >= 60 & air_time_diff <= -30)
+```
+
+#### Question 7:
+
+Which flights departed between midnight and 6am (inclusive)?
+
+```{r dat_flights}
+filter(dat_flights, dep_time >= 0 & dep_time <= 600)
+```
