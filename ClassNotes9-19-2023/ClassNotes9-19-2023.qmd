@@ -1,0 +1,72 @@
+---
+title: "ClassNotes"
+author: "Luke Gauthier"
+format: html
+editor: visual
+---
+
+# Class Notes 9/19/2023
+
+Write code to plot uniform probability density function where a = 1 and b = 6
+
+## Load libraries
+
+```{r, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(DT)
+```
+
+### Probability Density Function Plot
+
+```{r}
+x <- seq(0,8, length = 100)
+y <- dunif(x, min = 1, max = 6)
+plot(x,y,type="l")
+```
+
+### Cumulative Distribution Function Plot
+
+```{r}
+a = 1
+b = 6
+x <- seq(0,7)
+cdf <- punif(x, min = a, max = b)
+plot(cdf, type="l")
+```
+
+### Generate 100 Random numbers based on PDF & Histogram plot
+
+```{r}
+a = 1
+b = 6
+rand <- runif(10000, min = a, max = b)
+print(rand)
+hist(rand, xlim = c(0,7))
+
+```
+### Normal Distribution
+```{r}
+x <- seq(-1,1, length = 100)
+y <- dnorm(x, mean = 0, sd = 1)
+plot(x,y, type = "l", main = "Normal Distribution", col = "blue")
+rand2 <- rnorm(100)
+hist(rand2)
+```
+### Problem
+- Cyber security system to detect anomalies
+- Response times of network requests are normally distributed with mean 100 m secs and a standard deviation of 20 m secs
+- What is the probability that a network request takes between 80 m sec and 100 m sec to be processed?
+#### Distribution of Network Requests
+```{r}
+x <- seq(0, 200)
+y <- dnorm(x, mean = 100, sd = 20)
+plot(x,y, type = "l", main = "Normal Dist. of Network Requests")
+```
+#### Probability that a network request takes between 80 msec and 100 msec to be processed
+```{r} 
+mu = 100
+sigma = 20
+probability = pnorm(100, mu, sigma) - pnorm(80, mu, sigma)
+print(probability)
+```
