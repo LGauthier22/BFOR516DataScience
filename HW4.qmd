@@ -7,14 +7,15 @@ editor: visual
 
 ## HW4
 
-- Repeat the simulation for A=1 and A=1.5. Show all three ROCs on the same plot with clear legends and labels. Keep all other parameters fixed: (MU_w = 0, SIGMA_w^2=1, k=10)
-- Repeat the simulation for k=15, k=20, k=30. Show all three ROCs on the same plot with clear legends and labels. Keep all other parameters fixed: (MU_w=0, SIGMA_w^2=1, A=0.5)
+-   Repeat the simulation for A=1 and A=1.5. Show all three ROCs on the same plot with clear legends and labels. Keep all other parameters fixed: (MU_w = 0, SIGMA_w\^2=1, k=10)
+-   Repeat the simulation for k=15, k=20, k=30. Show all three ROCs on the same plot with clear legends and labels. Keep all other parameters fixed: (MU_w=0, SIGMA_w\^2=1, A=0.5)
 
 ## Simulation 1
 
 When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ### Adding libraries
+
 ```{r}
 library(tidyverse)
 library(ggplot2)
@@ -36,7 +37,7 @@ s3 <- rep(A3, k)
 
 #Noise Model
 mu_w <- 0
-var_w <- 1
+var_w <- 3
 sd_w <- sqrt(var_w)
 
 
@@ -73,13 +74,47 @@ dat_sim <-
   bind_rows(data.frame('test_statistic' = test_statistic_h3, 'label' = 'H3'))
 ```
 ### Plotting simulation 1
+
 ```{r}
 ggplot(data = dat_sim, aes(x=test_statistic, fill = label)) + geom_density(alpha = 0.4)
 
 th <- A/2
 
 ```
+
+### ROC Curve Sim 1
+```{r}
+aTh <- seq(-2, 2, by = 0.05)
+PD_est <- NA
+PF_est <- NA
+PD_est2 <- NA
+PD_est3 <- NA
+for(i in 1:length(aTh)){
+  th <- aTh[i]
+  PD_est[i] <- sum(test_statistic_h1 > th)/repM
+  PD_est2[i] <- sum(test_statistic_h2 > th)/repM
+  PD_est3[i] <- sum(test_statistic_h3 > th)/repM
+  PF_est[i] <- sum(test_statistic_h0 > th)/repM
+}
+
+
+dat_perf <- data.frame('th'=aTh, 'PF_est' = PF_est, 'PD_est' = PD_est, 'PD_est2' = PD_est2,
+                       'PD_est3' = PD_est3)
+
+line_plot <- ggplot(data = dat_perf,
+       aes(x = PF_est)) + 
+  geom_line(aes(y = PD_est, color = 'red')) + geom_point(y = PD_est) +
+  geom_line(aes(y = PD_est2, color = 'orange')) + geom_point( y = PD_est2) +
+  geom_line(aes(y = PD_est3, color = 'yellow')) + geom_point(y = PD_est3) +
+  geom_abline(linetype = 'dashed') + 
+  ggtitle('Receiver Operating Characteristic Curve')
+  
+  line_plot
+
+```
+
 ## Simulation 2
+
 ```{r}
 # number of MonteCarlo trials
 repM <- 10000
@@ -129,6 +164,37 @@ dat_sim2 <-
 ```
 
 ### Plotting Simulation 2
+
 ```{r}
 ggplot(data = dat_sim2, aes(x=test_statistic, fill = label)) + geom_density(alpha = 0.5)
+```
+### ROC Curve 2
+```{r}
+aTh <- seq(-2, 2, by = 0.05)
+PD_est <- NA
+PF_est <- NA
+PD_est2 <- NA
+PD_est3 <- NA
+for(i in 1:length(aTh)){
+  th <- aTh[i]
+  PD_est[i] <- sum(test_statistic_k1 > th)/repM
+  PD_est2[i] <- sum(test_statistic_k2 > th)/repM
+  PD_est3[i] <- sum(test_statistic_k3 > th)/repM
+  PF_est[i] <- sum(test_statistic_k0 > th)/repM
+}
+
+
+dat_perf <- data.frame('th'=aTh, 'PF_est' = PF_est, 'PD_est' = PD_est, 'PD_est2' = PD_est2,
+                       'PD_est3' = PD_est3)
+
+line_plot <- ggplot(data = dat_perf,
+       aes(x = PF_est)) + 
+  geom_line(aes(y = PD_est, color = 'red')) + geom_point(y = PD_est, size = .5) +
+  geom_line(aes(y = PD_est2, color = 'orange')) + geom_point( y = PD_est2, size = .5) +
+  geom_line(aes(y = PD_est3, color = 'yellow')) + geom_point(y = PD_est3, size = .5) +
+  geom_abline(linetype = 'dashed') + 
+  ggtitle('Receiver Operating Characteristic Curve')
+  
+  line_plot
+
 ```
