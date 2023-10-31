@@ -1,0 +1,134 @@
+---
+title: "HW4"
+author: "Luke Gauthier"
+format: html
+editor: visual
+---
+
+## HW4
+
+- Repeat the simulation for A=1 and A=1.5. Show all three ROCs on the same plot with clear legends and labels. Keep all other parameters fixed: (MU_w = 0, SIGMA_w^2=1, k=10)
+- Repeat the simulation for k=15, k=20, k=30. Show all three ROCs on the same plot with clear legends and labels. Keep all other parameters fixed: (MU_w=0, SIGMA_w^2=1, A=0.5)
+
+## Simulation 1
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+### Adding libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+```
+
+```{r}
+# Number of MonteCarlo Trials
+repM <- 10000
+
+#Signal Model
+A = 0.5
+A2 = 1
+A3 = 1.5
+k <- 10
+s <- rep(A, k)
+s2 <- rep(A2, k)
+s3 <- rep(A3, k)
+
+#Noise Model
+mu_w <- 0
+var_w <- 1
+sd_w <- sqrt(var_w)
+
+
+
+#signal + noise
+test_statistic_h0 = NA
+for(iM in 1:repM){
+  w <- rnorm(k, mean = mu_w, sd = sd_w)
+  test_statistic_h0[iM] <- mean(w)
+}
+
+test_statistic_h1 = NA
+for(iM in 1:repM){
+  x <- A + rnorm(k, mean = mu_w, sd = sd_w)
+  test_statistic_h1[iM] <- mean(x)
+}
+
+test_statistic_h2 = NA
+for(iM in 1:repM){
+  x2 <- A2 + rnorm(k, mean = mu_w, sd = sd_w)
+  test_statistic_h2[iM] <- mean(x2)
+}
+
+test_statistic_h3 = NA
+for(iM in 1:repM){
+  x3 <- A3 + rnorm(k, mean = mu_w, sd = sd_w)
+  test_statistic_h3[iM] <- mean(x3)
+}
+
+dat_sim <- 
+  data.frame('test_statistic' = test_statistic_h0, 'label' = 'H0') %>%
+  bind_rows(data.frame('test_statistic' = test_statistic_h1, 'label' = 'H1')) %>%
+  bind_rows(data.frame('test_statistic' = test_statistic_h2, 'label' = 'H2')) %>%
+  bind_rows(data.frame('test_statistic' = test_statistic_h3, 'label' = 'H3'))
+```
+### Plotting simulation 1
+```{r}
+ggplot(data = dat_sim, aes(x=test_statistic, fill = label)) + geom_density(alpha = 0.4)
+
+th <- A/2
+
+```
+## Simulation 2
+```{r}
+# number of MonteCarlo trials
+repM <- 10000
+
+# Signal model
+A = 0.5
+k = 10
+k2 <- 15
+k3 <- 20
+k4 <- 30
+s <- rep(A, k)
+s2 <- rep(A,k2)
+s3 <- rep(A, k3)
+s4 <- rep(A, k4)
+
+test_statistic_k0 = NA
+for(iM in 1:repM){
+  w <- rnorm(k, mean = mu_w, sd = sd_w)
+  test_statistic_k0[iM] <- mean(w)
+}
+
+test_statistic_k1 = NA
+for(iM in 1:repM){
+  x <- A + rnorm(k2, mean = mu_w, sd = sd_w)
+  test_statistic_k1[iM] <- mean(x)
+}
+
+test_statistic_k2 = NA
+for(iM in 1:repM){
+  x2 <- A + rnorm(k3, mean = mu_w, sd = sd_w)
+  test_statistic_k2[iM] <- mean(x2)
+}
+
+test_statistic_k3 = NA
+for(iM in 1:repM){
+  x3 <- A + rnorm(k4, mean = mu_w, sd = sd_w)
+  test_statistic_k3[iM] <- mean(x3)
+}
+
+dat_sim2 <-
+  data.frame('test_statistic' = test_statistic_k1, 'label' = 'K1') %>%
+  bind_rows(data.frame('test_statistic' = test_statistic_k2, 'label' = 'K2')) %>%
+  bind_rows(data.frame('test_statistic' = test_statistic_k3, 'label' = 'K3')) %>%
+  mutate(
+    A=A
+  )
+```
+
+### Plotting Simulation 2
+```{r}
+ggplot(data = dat_sim2, aes(x=test_statistic, fill = label)) + geom_density(alpha = 0.5)
+```
